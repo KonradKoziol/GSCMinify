@@ -31,6 +31,7 @@ rl.on("close", function() {
                 if(response.length > 0) {
                     fs.writeFileSync(outputFilePath, response);
                     console.log("Wrote", response.length, "Bytes to", outputFilePath);
+                    console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
                 }
             }
         }

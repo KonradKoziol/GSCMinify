@@ -1,3 +1,9 @@
+/**
+ * GSCMinifier
+ * Developed By Liam
+ * https://github.com/lierrmm 
+ */
+
 function minify(input, options = []) {
     try {
         let shrink = new Minifier();
