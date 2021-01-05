@@ -2,6 +2,7 @@ const readline = require("readline");
 const path = require('path');
 const fs = require('fs');
 const minifier = require('./helpers/minify');
+const mangler = require('./helpers/mangler');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -20,25 +21,33 @@ rl.question("Enter Input File Path: ", function(path) {
 });
 
 rl.on("close", function() {
-    try {
-        if(filePath.length > 0 && outputFilePath.length > 0) {
-            console.log("Input", filePath);
-            console.log("Output", outputFilePath);
-            const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
-            if(inputFile.length > 0) {
-                console.log("Grabbed", inputFile.length, "Bytes from", filePath);
-                let response = minifier.Minify(inputFile, []);
-                if(response.length > 0) {
-                    fs.writeFileSync(outputFilePath, response);
-                    console.log("Wrote", response.length, "Bytes to", outputFilePath);
-                    console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
-                }
-            }
-        }
-        process.exit(0);
-    } catch(e) {
-        console.log(e);
+    // try {
+    //     if(filePath.length > 0 && outputFilePath.length > 0) {
+    //         console.log("Input", filePath);
+    //         console.log("Output", outputFilePath);
+    //         const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
+    //         if(inputFile.length > 0) {
+    //             console.log("Grabbed", inputFile.length, "Bytes from", filePath);
+    //             let response = minifier.Minify(inputFile, []);
+    //             if(response.length > 0) {
+    //                 fs.writeFileSync(outputFilePath, response);
+    //                 console.log("Wrote", response.length, "Bytes to", outputFilePath);
+    //                 console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
+    //             }
+    //         }
+    //     }
+    //     process.exit(0);
+    // } catch(e) {
+    //     console.log(e);
+    // }
+    const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
+    let response = mangler.Mangle(inputFile);
+    if(response.length > 0) {
+        fs.writeFileSync(outputFilePath, response);
+        console.log("Wrote", response.length, "Bytes to", outputFilePath);
+        console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
     }
+    process.exit(0);
 });
 
 
