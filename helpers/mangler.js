@@ -1,3 +1,9 @@
+/**
+ * GSCMinifier - Mangler
+ * Developed By Liam
+ * https://github.com/lierrmm 
+ */
+
 function mangle(input) {
     try {
         let mang = new Mangler();
@@ -18,21 +24,28 @@ class Mangler {
 
     randomStr = (length) => {
         let result           = '';
+        let charsNoNum       = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let charactersLength = characters.length;
         for ( let i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+           if(i === 0) result += charsNoNum.charAt(Math.floor(Math.random() * charactersLength));
+           else result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
-        return result + "(";
+        return result;
     };
 
     runMangler = (str) => {
         let _str = this.randomStr(2);
         if(!this.used_strs.includes(_str)) {
             this.used_strs.push(_str);
-            str = str.replace("(", "\\(");
-            let re = new RegExp(str, 'g');
-            this.output = this.output.replace(re, _str);
+            let newstr = str.replace("(", "\\(");
+            let re = new RegExp(newstr, 'g');
+            this.output = this.output.replace(re, `${_str}(`);
+            // Check for inlined functions like ::demo
+            str = `::${str.substring(0, str.length - 1)}`
+            console.log(str);
+            re = new RegExp(str, 'g');
+            this.output = this.output.replace(re, `::${_str}`);
         }
         else 
             return this.runMangler(str);

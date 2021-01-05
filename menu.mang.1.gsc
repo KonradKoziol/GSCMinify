@@ -1,4 +1,4 @@
-runMenuIndex(menu)
+NZ(menu)
 {
     if(menu == "main")
     {
@@ -23,7 +23,7 @@ runMenuIndex(menu)
     if(menu == "Basic Scripts")
     {
         self addMenu("Basic Scripts","Basic Scripts");
-            self addOptBool("God Mode",::godmode);
+            self addOptBool("God Mode",::tc);
             self addOptBool("Unlimited Ammo",::UnlimitedAmmo);
             self addOptBool("Unlimited Equipment",::UnlimitedEquipment);
     }
@@ -40,10 +40,14 @@ runMenuIndex(menu)
             self addOpt("Disconnect",::disconnect);
     }
     
-    self playerOptions(menu);
+    self Y(menu);
 }
 
-playerOptions(menu)
+tc() {
+    self thread EnableInvulnerability();
+}
+
+Y(menu)
 {
     if(menu == "Players Menu")
     {
@@ -67,7 +71,7 @@ playerOptions(menu)
     }
 }
 
-menuMonitor()
+DP()
 {
     while(true)
     {
@@ -77,7 +81,7 @@ menuMonitor()
             {
                 if(self AdsButtonPressed() && self MeleeButtonPressed())
                 {
-                    self openMenu1("main");
+                    self xz("main");
                     wait .25;
                 }
             }
@@ -91,7 +95,7 @@ menuMonitor()
                     self.menu["curs"][menu] += self AttackButtonPressed();
                     self.menu["curs"][menu] -= self AdsButtonPressed();
                     
-                    if(curs != self.menu["curs"][menu])scrollMenu((self AttackButtonPressed() ? 1 : -1), curs);
+                    if(curs != self.menu["curs"][menu])eV((self AttackButtonPressed() ? 1 : -1), curs);
                     wait .13;
                 }
                 else if(self UseButtonPressed())
@@ -104,7 +108,7 @@ menuMonitor()
                         if(self.menu["items"][menu].func[curs] == ::newMenu)
                         {
                             self MenuArrays(menu);
-                            self thread runMenuIndex(self.menu["items"][menu].input1[curs]);
+                            self thread NZ(self.menu["items"][menu].input1[curs]);
                         }
                         self thread [[self.menu["items"][menu].func[curs]]] (self.menu["items"][menu].input1[curs],self.menu["items"][menu].input2[curs],self.menu["items"][menu].input3[curs]);
                     }
@@ -112,7 +116,7 @@ menuMonitor()
                 }
                 else if(self MeleeButtonPressed())
                 {
-                    if(self getCurrent() == "main")self closeMenu1();
+                    if(self getCurrent() == "main")self yN();
                     else self newMenu();
                     wait .2;
                 }
@@ -122,9 +126,9 @@ menuMonitor()
     }
 }
 
-drawText()
+og()
 {
-    self DestroyOpts();
+    self Yv();
     if(!isDefined(self.menu["curs"][self getCurrent()]))self.menu["curs"][self getCurrent()] = 0;
     
     text      = self.menu["items"][self getCurrent()].name;
@@ -153,10 +157,10 @@ drawText()
     }
     
     self.menu["ui"]["scroller"] thread hudMoveY(self.menu["ui"]["text"][self getCursor()].y,.13);
-    self UpdateOptCount();
+    self EI();
 }
 
-scrollMenu(dir,OldCurs)
+eV(dir,OldCurs)
 {
     max       = self.menu["MaxOptions"];
     center    = self.menu["OptionsCenter"];
@@ -171,7 +175,7 @@ scrollMenu(dir,OldCurs)
         curs = getCursor();
         
         OldCurs = curs;
-        if((arry.size-1) > max)self RefreshMenu();
+        if((arry.size-1) > max)self Nf();
     }
     else if(curs < arry.size-centerBig && OldCurs > center || curs > center && OldCurs < arry.size-centerBig)
     {
@@ -202,17 +206,17 @@ scrollMenu(dir,OldCurs)
     }
     
     self.menu["ui"]["scroller"] thread hudMoveY(self.menu["ui"]["text"][curs].y,.13);
-    self UpdateOptCount();
+    self EI();
 }
 
-SetMenuTitle(title)
+Qb(title)
 {
     if(!isDefined(self.menu["ui"]["title"]))return;
     if(!isDefined(title))title = self.menu["items"][self getCurrent()].title;
     self.menu["ui"]["title"] SetSafeText(title);
 }
 
-openMenu1(menu)
+xz(menu)
 {
     self.menu["ui"]["background"] = self createRectangle("CENTER", "CENTER", self.menu["X"], self.menu["Y"], self.menu["Background_Width"], self.menu["Background_Height"], self.menu["Background_Color"], 2, self.menu["Background_Alpha"], self.menu["Background_Shader"]);
     self.menu["ui"]["scroller"] = self createRectangle("CENTER", "CENTER", self.menu["X"], self.menu["Y"]-40, self.menu["Scroller_Width"], self.menu["Scroller_Height"], self.menu["Main_Color"], 3, self.menu["Scroller_Alpha"], self.menu["Scroller_Shader"]);
@@ -220,55 +224,51 @@ openMenu1(menu)
     self.menu["ui"]["barBottom"] = self createRectangle("CENTER", "CENTER", self.menu["BannerX"], self.menu["BannerBottomY"], self.menu["Banner_Width"], self.menu["BannerBottom_Height"], self.menu["Main_Color"], 4, self.menu["Banner_Alpha"], self.menu["Banner_Shader"]); 
     
     if(!self.menu["curs"][getCurrent()])self.menu["curs"][getCurrent()] = 0;
-    self runMenuIndex(menu);
+    self NZ(menu);
     self.menu["currentMenu"] = menu;
     
     self.menu["ui"]["title"] = self createText(self.menu["Title_Font"],self.menu["Title_Fontscale"], 5, "", self.menu["Title_Align"], "CENTER", self.menu["TitleX"], self.menu["TitleY"], self.menu["Title_Alpha"], self.menu["Title_Color"]);
     self.menu["ui"]["MenuName"] = self createText(self.menu["Title_Font"],self.menu["MenuName_Fontscale"], 5, getMenuName(), self.menu["MenuName_Align"], "CENTER", self.menu["MenuNameX"], self.menu["MenuNameY"], self.menu["Title_Alpha"], self.menu["Title_Color"]);
     self.menu["ui"]["OptionCount"] = self createText(self.menu["Title_Font"],self.menu["MenuName_Fontscale"], 5, "", self.menu["OptionCount_Align"], "CENTER", self.menu["OptionCountX"], self.menu["MenuNameY"], self.menu["Title_Alpha"], self.menu["Title_Color"]);
-    self SetMenuTitle();
-    self drawText();
+    self Qb();
+    self og();
     self.playerSetting["isInMenu"] = true;
 }
 
-UpdateOptCount()
+EI()
 {
     if(isDefined(self.menu["ui"]["OptionCount"]))self.menu["ui"]["OptionCount"] SetSafeText("["+(self getCursor()+1)+"/"+self.menu["items"][self getCurrent()].name.size+"]");
 }
 
-closeMenu1()
+yN()
 {
     destroyAll(self.menu["ui"]);
     self.playerSetting["isInMenu"] = undefined;
 }
 
-RefreshMenu()
+Nf()
 {
     if(self isInMenu())
     {
-        self DestroyOpts();
-        self SetMenuTitle();
-        self drawText();
+        self Yv();
+        self Qb();
+        self og();
     }
 }
 
-DestroyOpts()
+Yv()
 {
     destroyAll(self.menu["ui"]["text"]);
     destroyAll(self.menu["ui"]["BoolOpt"]);
     destroyAll(self.menu["ui"]["boolTrue"]);
 }
 
-SetOptionBool(bool,menu,curs)
+QL(bool,menu,curs)
 {
     if(!isDefined(menu))menu = self getCurrent();
     if(!isDefined(curs))curs = self getCursor();
     
     if(isDefined(bool))self.menu_B[menu][curs] = true;
     else self.menu_B[menu][curs] = undefined;
-    self RefreshMenu();
-}
-
-godmode() {
-    self thread EnableInvulnerability();
+    self Nf();
 }
