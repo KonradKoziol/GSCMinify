@@ -11,7 +11,6 @@ function mangle(input) {
         return output;
     }
     catch(ex) {
-        console.log(ex);
         throw ex;
     }
 }
@@ -28,7 +27,7 @@ class Mangler {
         let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let charactersLength = characters.length;
         for ( let i = 0; i < length; i++ ) {
-           if(i === 0) result += charsNoNum.charAt(Math.floor(Math.random() * charactersLength));
+           if(i === 0) result += charsNoNum.charAt(Math.floor(Math.random() * charsNoNum.length));
            else result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
@@ -43,7 +42,6 @@ class Mangler {
             this.output = this.output.replace(re, `${_str}(`);
             // Check for inlined functions like ::demo
             str = `::${str.substring(0, str.length - 1)}`
-            console.log(str);
             re = new RegExp(str, 'g');
             this.output = this.output.replace(re, `::${_str}`);
         }

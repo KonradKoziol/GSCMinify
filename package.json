@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Lierrmm/GSCMinify/issues"
   },
-  "homepage": "https://github.com/Lierrmm/GSCMinify#readme"
+  "homepage": "https://github.com/Lierrmm/GSCMinify#readme",
+  "dependencies": {
+    "optimist": "^0.6.1",
+    "prompt": "^1.1.0"
+  }
 }

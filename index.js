@@ -1,62 +1,57 @@
-const readline = require("readline");
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const prompt = require('prompt');
+const optimist = require('optimist');
 const minifier = require('./helpers/minify');
 const mangler = require('./helpers/mangler');
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+prompt.override = optimist.argv;
 
 let filePath = "";
-let outputFilePath = "";
 
-rl.question("Enter Input File Path: ", function(path) {
-    filePath = path;
-    rl.question("Enter Output File Path: ", function(path) {
-        outputFilePath = path;
-        rl.close();
-    });
-});
+prompt.start();
 
-rl.on("close", function() {
-    // try {
-    //     if(filePath.length > 0 && outputFilePath.length > 0) {
-    //         console.log("Input", filePath);
-    //         console.log("Output", outputFilePath);
-    //         const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
-    //         if(inputFile.length > 0) {
-    //             console.log("Grabbed", inputFile.length, "Bytes from", filePath);
-    //             let response = minifier.Minify(inputFile, []);
-    //             if(response.length > 0) {
-    //                 fs.writeFileSync(outputFilePath, response);
-    //                 console.log("Wrote", response.length, "Bytes to", outputFilePath);
-    //                 console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
-    //             }
-    //         }
-    //     }
-    //     process.exit(0);
-    // } catch(e) {
-    //     console.log(e);
-    // }
-    const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
-    let response = mangler.Mangle(inputFile);
-    if(response.length > 0) {
-        fs.writeFileSync(outputFilePath, response);
-        console.log("Wrote", response.length, "Bytes to", outputFilePath);
-        console.log("Total Savings of", Math.abs((100 - (response.length/inputFile.length) * 100)).toFixed(2) + "%");
+prompt.get(['input'], function (err, result) {
+    try {
+        if(err) return console.error(err);
+        
+        filePath = result.input;
+
+        if(filePath.length <= 0) return console.warn("No Input File Specified.");
+
+        const inputFile = fs.readFileSync(filePath, { encoding: 'utf-8' }); 
+        
+        if(inputFile.length <= 0) return console.warn("No Input File Specified.");
+
+        // Mangle First
+
+        let mangled = mangler.Mangle(inputFile);
+        if(mangled.length <= 0) return console.warn("Could not mangle file. Exiting.");
+        console.log(">", `Mangled ${inputFile.length} Bytes into ${mangled.length} Bytes. Saving ${Math.abs((100 - (mangled.length/inputFile.length) * 100)).toFixed(2)}%`);
+        
+        // Minify 
+
+        let minified = minifier.Minify(mangled);
+        if(minified.length <= 0) return console.warn("Could not minify file. Exiting.");
+        console.log(">", `Minified ${mangled.length} Bytes into ${minified.length} Bytes. Saving ${Math.abs((100 - (minified.length/mangled.length) * 100)).toFixed(2)}%`);
+
+        // Calculate total
+
+        let mangledValue = Math.abs((100 - (mangled.length/inputFile.length) * 100));
+        let minifiedValue = Math.abs((100 - (minified.length/mangled.length) * 100));
+
+        let totalValue = mangledValue + minifiedValue;
+
+        console.log(">", `Saved ${totalValue.toFixed(2)}% in total.`);
+        let outputFilePath = `${path.dirname(filePath)}/${path.parse(filePath).name}.min.gsc`;
+        fs.writeFileSync(outputFilePath, minified);
+
+        console.log(">", `Wrote output to ${outputFilePath}`);
+        console.log(">", "Exiting..");
+        process.exit(0);
     }
-    process.exit(0);
+    catch(err) {
+        console.error(err.message);
+        process.exit(0);
+    }
 });
-
-
-
-// const wasm_exec_js = path.join(npmWasmDir, 'wasm_exec.js')
-// const wasmExecMin = childProcess.execFileSync(esbuildPath, [
-//     wasm_exec_js,
-//     '--minify',
-//   ], { cwd: repoDir }).toString()
-//   const commentLines = fs.readFileSync(wasm_exec_js, 'utf8').split('\n')
-//   const firstNonComment = commentLines.findIndex(line => !line.startsWith('//'))
-//   const wasmExecMinCode = '\n' + commentLines.slice(0, firstNonComment).concat(wasmExecMin).join('\n')

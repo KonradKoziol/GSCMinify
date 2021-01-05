@@ -11,7 +11,6 @@ function minify(input, options = []) {
         return output;
     }
     catch(ex) {
-        console.log(ex);
         throw ex;
     }
 }
@@ -174,7 +173,6 @@ class Minifier {
 
         saveRegex = () => {
             this.output += (this.firstChar + this.secondChar);
-            console.log("math",this.firstChar + this.secondChar);
             while ((this.firstChar = this.getChar()) !== false) {
                 if (this.firstChar === '/') {
                     break;
