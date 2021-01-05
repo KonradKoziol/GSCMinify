@@ -17,7 +17,7 @@ function minify(input, options = []) {
 
 
 class Minifier {
-    input;
+    input = "";
     len = 0;
     index = 0;
     firstChar = '';
