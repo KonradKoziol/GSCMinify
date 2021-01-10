@@ -1,16 +1,13 @@
 {
   "name": "gscminify",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mangle and Minify GSC Projects ready for Infinity Loader.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lierrmm/GSCMinify.git"
   },
-  "author": "",
+  "author": "Liam",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Lierrmm/GSCMinify/issues"
