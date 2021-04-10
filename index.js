@@ -4,6 +4,7 @@ const prompt = require('prompt');
 const optimist = require('optimist');
 const minifier = require('./helpers/minify');
 const mangler = require('./helpers/mangler');
+const outlier = require('./helpers/outliers');
 
 prompt.override = optimist.argv;
 
@@ -52,6 +53,43 @@ prompt.get(['input'], function (err, result) {
     }
     catch(err) {
         console.error(err.message);
+        process.exit(0);
+    }
+});
+
+prompt.get(["search"], function(err, result) {
+    try {
+        if(err) return console.error(err);
+        filePath = result.search;
+
+        if(filePath.length <= 0) return console.warn("No Input Folder Specified.");
+
+        const inputFile = fs.readdirSync(filePath, { encoding: 'utf-8' }); 
+        
+        if(inputFile.length <= 0) return console.warn("No Folder Specified.");
+
+        let fileText = [];
+
+        for (file of inputFile) {
+            let text = fs.readFileSync(`${filePath}${file}`, { encoding: 'utf-8' });
+            text = text.trim();
+            fileText.push(text);
+        }
+        let responses = outlier.Mangle(fileText);
+        fs.writeFileSync("./info.json", JSON.stringify(responses.results, null, 2));
+        
+        if (responses.outliers.length > 0) {
+            fs.writeFileSync("./outliers.json", JSON.stringify(responses.outliers, null, 2));
+            console.log(">", `Wrote possible outliers to ./outliers.json.`);
+        } else {
+            console.log(">", `Found no possible outliers. Skipping.`);
+        }
+        console.log(">", `Wrote results to ./info.json.`);
+        console.log(">", "Exiting..");
+        process.exit(0);
+    }
+    catch(err) {
+        console.error(err);
         process.exit(0);
     }
 });
