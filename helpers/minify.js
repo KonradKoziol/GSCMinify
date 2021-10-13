@@ -184,7 +184,7 @@ class Minifier {
                 }
     
                 if (this.firstChar === "\n") {
-                    throw new Error('Unclosed regex pattern at position: ' . this.index);
+                    throw new Error('Unclosed regex pattern at position: '+ this.index);
                 }
     
                 this.output += this.firstChar;
@@ -266,7 +266,7 @@ class Minifier {
             this.initialise(gsc, options);
             this.loop();
             this.clean();
-            return this.output;
+            return this.output.substring(1);
         };
     };
 
